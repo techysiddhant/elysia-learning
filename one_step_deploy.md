@@ -72,3 +72,45 @@ You should see:
 - `nginx` (Reverse Proxy listening on port 80)
 
 Visit `http://<your-vps-ip>` in your browser.
+
+### 5. Update Environment Variables & Redeploy
+If you missed an environment variable, for example `DATABASE_URL`, you can generate it from your existing variables:
+
+```bash
+# 1. Source the current variables so we can use them
+source .env
+
+# 2. Append the constructed DATABASE_URL to .env
+# Note: "db" is the service name in docker-compose
+echo "DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}" >> .env
+
+# 3. Check the file to verify
+cat .env
+
+# 4. Rebuild and restart
+docker compose up -d --build
+```
+
+### 6. Debugging Issues (502 Bad Gateway)
+If you see a **502 Bad Gateway**, it usually means Nginx cannot talk to your App. This often happens if the App crashed or is still starting up.
+
+#### Check Logs
+To see what is happening inside your containers:
+
+```bash
+# View logs for the application (Elysia)
+docker compose logs -f app
+
+# View logs for the database
+docker compose logs -f db
+
+# View logs for Nginx
+docker compose logs -f nginx
+```
+
+#### Common Fixes
+1.  **Database Connection**: If the app logs say "Connection refused" to the DB, ensure the `DATABASE_URL` is correct.
+    *   Check it: `docker compose exec app env`
+    *   Fix it: Follow Step 5 above.
+2.  **App Crash**: If the app logs show a crash error, fix the error in your code, push to git, pull on VPS, and rebuild (`docker compose up -d --build`).
+3.  **Port Mismatch**: Ensure your app listens on port 3000 (defined in `docker-compose.yml` and `nginx/conf.d/default.conf`).

@@ -35,6 +35,9 @@ COPY --from=prerelease /app/tsconfig.json .
 # Assuming drizzle migrations are in 'drizzle' folder as per common practice, or user might need to adjust
 COPY --from=prerelease /app/drizzle ./drizzle 
 
+# Install drizzle-kit specifically for production migrations
+RUN bun add drizzle-kit 
+
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
