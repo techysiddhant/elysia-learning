@@ -12,6 +12,12 @@ export const app = new Elysia()
   .onRequest(({ request }) => {
     console.log('!!! INCOMING REQUEST:', request.method, request.url);
   })
+  .get("/", () => {
+    return {
+      status: "ok",
+      message: "Elysia 10x API is running"
+    };
+  })
   .use(logger({
     level: env.LOG_LEVEL,
   }))
