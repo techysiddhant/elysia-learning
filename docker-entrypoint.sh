@@ -13,4 +13,4 @@ fi
 
 # Start the application
 echo "Starting Elysia app..."
-exec bun run src/index.ts
+exec bun run server.js

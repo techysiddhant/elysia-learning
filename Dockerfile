@@ -19,23 +19,22 @@ FROM base AS prerelease
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
-# [Optional] Tests & Build
+# Build the application
 # ENV NODE_ENV=production
-# RUN bun test
-# RUN bun run build
+RUN bun run build
 
 # Final release image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app/src src
+COPY --from=prerelease /app/server.js .
 COPY --from=prerelease /app/package.json .
 COPY --from=prerelease /app/drizzle.config.ts .
-COPY --from=prerelease /app/tsconfig.json .
-# Copy migrations folder if it exists, or ensure drizzle kit can generate/migrate
-# Assuming drizzle migrations are in 'drizzle' folder as per common practice, or user might need to adjust
+# Copy migrations folder if it exists
 COPY --from=prerelease /app/drizzle ./drizzle 
 
 # Install drizzle-kit specifically for production migrations
+# Note: we might need to add it to prod deps or copy from dev deps if we want to run migrations
+# For now, keeping the explicit install as it was in original
 RUN bun add drizzle-kit 
 
 # Copy entrypoint script
