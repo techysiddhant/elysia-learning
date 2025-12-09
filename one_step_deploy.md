@@ -114,3 +114,17 @@ docker compose logs -f nginx
     *   Fix it: Follow Step 5 above.
 2.  **App Crash**: If the app logs show a crash error, fix the error in your code, push to git, pull on VPS, and rebuild (`docker compose up -d --build`).
 3.  **Port Mismatch**: Ensure your app listens on port 3000 (defined in `docker-compose.yml` and `nginx/conf.d/default.conf`).
+
+### 7. Monitoring & Maintenance
+Check how much memory and CPU your services are using.
+
+```bash
+# Check Docker container memory/CPU usage
+docker stats --no-stream
+
+# Check overall VPS memory usage
+free -h
+
+# Check disk space usage
+df -h
+```

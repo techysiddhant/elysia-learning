@@ -1,4 +1,3 @@
-import { Context } from 'elysia';
 
 export const healthController = {
   check: () => {

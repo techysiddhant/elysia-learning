@@ -7,5 +7,5 @@ export const welcomeController = new Elysia()
       status: 'ok',
     };
   }, {
-    detail: { tags: ["General"] }
+    detail: { hide: true }
   });

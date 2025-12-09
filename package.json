@@ -13,6 +13,7 @@
     "@elysiajs/openapi": "^1.4.11",
     "better-auth": "^1.4.5",
     "drizzle-orm": "^0.45.0",
+    "drizzle-typebox": "^0.3.3",
     "elysia": "latest",
     "elysia-http-status-code": "^1.0.9",
     "elysia-logger": "^0.5.2",

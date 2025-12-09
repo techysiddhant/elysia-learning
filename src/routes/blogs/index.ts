@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { authMiddleware } from "../../middleware/auth";
-import * as handlers from "./blogs.handlers";
+import * as handlers from "./blogs.controller";
 import * as schemas from "./blogs.schema";
 
 export const blogRoutes = new Elysia({ prefix: "/blogs" })
