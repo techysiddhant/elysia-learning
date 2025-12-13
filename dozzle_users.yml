@@ -1,0 +1,3 @@
+# Dozzle Users File
+# Use scripts/add-dozzle-user.sh to add users securely.
+users: []

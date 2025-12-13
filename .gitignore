@@ -15,6 +15,7 @@ server.js
 # production
 /build
 AWS_DEPLOYMENT.md
+daemon.json.snippet
 # misc
 .DS_Store
 *.pem
