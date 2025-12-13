@@ -1,7 +1,21 @@
-node_modules
+# Ignore everything by default
+*
+
+# Explicitly allow these
+!src/
+!package.json
+!bun.lockb
+!tsconfig.json
+!drizzle.config.ts
+!docker-compose.yml
+!docker-entrypoint.sh
+!Dockerfile
+!drizzle/
+!nginx/
+
+# Explicitly ignore these (redundant but safe)
 .git
 .env
+node_modules
 dist
 build
-coverage
-*.pem
