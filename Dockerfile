@@ -21,6 +21,7 @@ COPY . .
 
 # Build the application
 # ENV NODE_ENV=production
+RUN ls -la /app && cat /app/tsconfig.json
 RUN bun run build
 
 # Final release image

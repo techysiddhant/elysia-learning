@@ -11,7 +11,7 @@
 # next.js
 /.next/
 /out/
-
+server.js
 # production
 /build
 AWS_DEPLOYMENT.md
