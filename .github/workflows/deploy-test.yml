@@ -1,0 +1,62 @@
+name: Deploy Test to AWS EC2
+
+on:
+  push:
+    branches: [ "test" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Environment Variables
+        id: vars
+        run: |
+          echo "ENV_NAME=test" >> $GITHUB_OUTPUT
+          echo "COMPOSE_PROJECT_NAME=elysia-test" >> $GITHUB_OUTPUT
+          echo "APP_CONTAINER_NAME=elysia_test_app" >> $GITHUB_OUTPUT
+          echo "DB_CONTAINER_NAME=elysia_test_db" >> $GITHUB_OUTPUT
+          echo "NGINX_CONTAINER_NAME=elysia_test_nginx" >> $GITHUB_OUTPUT
+          echo "DB_VOLUME_NAME=postgres_test_data" >> $GITHUB_OUTPUT
+          echo "NGINX_PORT=8080" >> $GITHUB_OUTPUT
+
+      - name: Create .env file for Remote
+        run: |
+          echo "${{ secrets.ENV_FILE_TEST }}" > .env.test
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          source: "docker-compose.yml,nginx/conf.d/default.conf,Dockerfile,package.json,bun.lockb,src,drizzle,docker-entrypoint.sh,.env.test"
+          target: "/home/${{ secrets.USERNAME }}/${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}"
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            cd /home/${{ secrets.USERNAME }}/${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}
+            
+            # Move the correct env file to .env
+            mv .env.test .env
+
+            # Export variables for docker-compose
+            export APP_CONTAINER_NAME=${{ steps.vars.outputs.APP_CONTAINER_NAME }}
+            export DB_CONTAINER_NAME=${{ steps.vars.outputs.DB_CONTAINER_NAME }}
+            export NGINX_CONTAINER_NAME=${{ steps.vars.outputs.NGINX_CONTAINER_NAME }}
+            export DB_VOLUME_NAME=${{ steps.vars.outputs.DB_VOLUME_NAME }}
+            export NGINX_PORT=${{ steps.vars.outputs.NGINX_PORT }}
+            export COMPOSE_PROJECT_NAME=${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}
+
+            # Pull and Deploy
+            docker compose down --remove-orphans || true
+            docker compose up -d --build --remove-orphans

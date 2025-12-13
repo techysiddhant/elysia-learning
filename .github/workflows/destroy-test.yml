@@ -1,0 +1,46 @@
+name: Destroy Test Environment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Environment Variables per Test Config
+        id: vars
+        run: |
+          echo "COMPOSE_PROJECT_NAME=elysia-test" >> $GITHUB_OUTPUT
+          echo "APP_CONTAINER_NAME=elysia_test_app" >> $GITHUB_OUTPUT
+          echo "DB_CONTAINER_NAME=elysia_test_db" >> $GITHUB_OUTPUT
+          echo "NGINX_CONTAINER_NAME=elysia_test_nginx" >> $GITHUB_OUTPUT
+          echo "DB_VOLUME_NAME=postgres_test_data" >> $GITHUB_OUTPUT
+          echo "NGINX_PORT=8080" >> $GITHUB_OUTPUT
+
+      - name: Destroy Test Environment on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: |
+            cd /home/${{ secrets.USERNAME }}/${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}
+            
+            # Export variables to match what was used in up
+            export APP_CONTAINER_NAME=${{ steps.vars.outputs.APP_CONTAINER_NAME }}
+            export DB_CONTAINER_NAME=${{ steps.vars.outputs.DB_CONTAINER_NAME }}
+            export NGINX_CONTAINER_NAME=${{ steps.vars.outputs.NGINX_CONTAINER_NAME }}
+            export DB_VOLUME_NAME=${{ steps.vars.outputs.DB_VOLUME_NAME }}
+            export NGINX_PORT=${{ steps.vars.outputs.NGINX_PORT }}
+            export COMPOSE_PROJECT_NAME=${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}
+
+            # Bring down containers but keep volumes
+            docker compose down --remove-orphans
+            
+            # Cleanup directory
+            cd ..
+            rm -rf ${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}

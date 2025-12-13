@@ -14,7 +14,7 @@
 
 # production
 /build
-
+AWS_DEPLOYMENT.md
 # misc
 .DS_Store
 *.pem
@@ -32,7 +32,6 @@ yarn-error.log*
 .env
 # vercel
 .vercel
-
 **/*.trace
 **/*.zip
 **/*.tar.gz
