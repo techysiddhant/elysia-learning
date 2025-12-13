@@ -46,7 +46,7 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./dozzle_users.yml:/data/users.yml
+      - ./dozzle_data:/data
     ports:
       - "8888:8080"
     environment:

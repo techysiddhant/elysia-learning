@@ -3,7 +3,7 @@
 # Script to add a user to Dozzle's users.yml
 # Usage: ./add-dozzle-user.sh
 
-USERS_FILE="./dozzle_users.yml"
+USERS_FILE="./dozzle_data/users.yml"
 
 if [ ! -f "$USERS_FILE" ]; then
     echo "Error: $USERS_FILE not found."
@@ -64,4 +64,4 @@ echo "User $USERNAME added successfully."
 echo "Restarting Dozzle to apply changes..."
 docker restart dozzle
 
-echo "Done! You can now login at http://localhost:8888"
+echo "Done! You can now login at http://localhost:8880"
