@@ -33,7 +33,7 @@ if grep -q "users: \[\]" "$USERS_FILE"; then
 fi
 if ! grep -q "^users:" "$USERS_FILE"; then echo "users:" >> "$USERS_FILE"; fi
 
-echo "$HASH_OUTPUT" >> "$USERS_FILE"
+echo "$HASH_OUTPUT" | sed 's/^/  /' >> "$USERS_FILE"
 echo "User $USERNAME added successfully. Restarting Dozzle..."
 docker restart dozzle || docker compose up -d dozzle
 echo "Done! Login at http://localhost:8888"
