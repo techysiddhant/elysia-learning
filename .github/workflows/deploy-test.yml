@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: 22
-          source: "docker-compose.yml,nginx/conf.d/default.conf,Dockerfile,package.json,bun.lockb,src,drizzle,docker-entrypoint.sh,.env.test,tsconfig.json"
+          source: "docker-compose.yml,nginx/conf.d/default.conf,Dockerfile,package.json,bun.lockb,src,drizzle,docker-entrypoint.sh,.env.test,tsconfig.json,drizzle.config.ts,.dockerignore"
           target: "/home/${{ secrets.USERNAME }}/${{ steps.vars.outputs.COMPOSE_PROJECT_NAME }}"
 
       - name: Deploy on EC2
