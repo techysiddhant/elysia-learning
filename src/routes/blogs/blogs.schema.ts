@@ -3,6 +3,8 @@ import { createInsertSchema, createSelectSchema } from "drizzle-typebox";
 import { blogs } from "../../db/schema/blogs";
 import { ErrorResponseSchema } from "../../utils/models";
 
+export const BlogModel = createSelectSchema(blogs);
+
 // Blog entity schema generated from Drizzle
 export const BlogSchema = createSelectSchema(blogs, {
   createdAt: t.Date(),

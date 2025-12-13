@@ -4,6 +4,9 @@ import * as handlers from "./blogs.controller";
 import * as schemas from "./blogs.schema";
 
 export const blogRoutes = new Elysia({ prefix: "/blogs" })
+  .model({ 
+    blog: schemas.BlogModel 
+  })
   .use(authMiddleware)
   .get("/", handlers.getBlogs, schemas.getBlogsSchema)
   .post("/", handlers.createBlog, {
