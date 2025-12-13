@@ -21,7 +21,7 @@ COPY . .
 
 # Build the application
 # ENV NODE_ENV=production
-RUN ls -la && cat tsconfig.json
+COPY tsconfig.json .
 RUN bun run build
 
 # Final release image
