@@ -1,4 +1,3 @@
-
 export const healthController = {
   check: () => {
     return {

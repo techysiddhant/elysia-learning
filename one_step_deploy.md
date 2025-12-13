@@ -3,6 +3,7 @@
 Deploy your Elysia app to a VPS in minutes.
 
 ## Prerequisites
+
 - A VPS (Ubuntu 20.04/22.04 recommended)
 - SSH access
 - Git (usually installed by default)
@@ -12,6 +13,7 @@ Deploy your Elysia app to a VPS in minutes.
 Connect to your VPS and run the following commands block by block.
 
 ### 1. Install Docker & Docker Compose
+
 If you haven't installed Docker yet:
 
 ```bash
@@ -28,6 +30,7 @@ docker compose version
 ```
 
 ### 2. Clone & Setup
+
 Replace the repository URL if needed.
 
 ```bash
@@ -53,6 +56,7 @@ EOF
 > **Note**: You can generate a random secret for `BETTER_AUTH_SECRET` using `openssl rand -base64 32`.
 
 ### 3. Launch
+
 This builds the images and starts the containers in detached mode.
 
 ```bash
@@ -60,6 +64,7 @@ docker compose up -d --build
 ```
 
 ### 4. Verify
+
 Check if the services are running:
 
 ```bash
@@ -67,6 +72,7 @@ docker compose ps
 ```
 
 You should see:
+
 - `app` (Elysia application)
 - `db` (Postgres)
 - `nginx` (Reverse Proxy listening on port 80)
@@ -74,6 +80,7 @@ You should see:
 Visit `http://<your-vps-ip>` in your browser.
 
 ### 5. Update Environment Variables & Redeploy
+
 If you missed an environment variable, for example `DATABASE_URL`, you can generate it from your existing variables:
 
 ```bash
@@ -92,9 +99,11 @@ docker compose up -d --build
 ```
 
 ### 6. Debugging Issues (502 Bad Gateway)
+
 If you see a **502 Bad Gateway**, it usually means Nginx cannot talk to your App. This often happens if the App crashed or is still starting up.
 
 #### Check Logs
+
 To see what is happening inside your containers:
 
 ```bash
@@ -109,13 +118,15 @@ docker compose logs -f nginx
 ```
 
 #### Common Fixes
+
 1.  **Database Connection**: If the app logs say "Connection refused" to the DB, ensure the `DATABASE_URL` is correct.
-    *   Check it: `docker compose exec app env`
-    *   Fix it: Follow Step 5 above.
+    - Check it: `docker compose exec app env`
+    - Fix it: Follow Step 5 above.
 2.  **App Crash**: If the app logs show a crash error, fix the error in your code, push to git, pull on VPS, and rebuild (`docker compose up -d --build`).
 3.  **Port Mismatch**: Ensure your app listens on port 3000 (defined in `docker-compose.yml` and `nginx/conf.d/default.conf`).
 
 ### 7. Monitoring & Maintenance
+
 Check how much memory and CPU your services are using.
 
 ```bash

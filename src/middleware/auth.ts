@@ -1,20 +1,23 @@
-import { Elysia } from "elysia";
-import { auth } from "../lib/auth";
-import { HttpStatusEnum } from "elysia-http-status-code/status";
+import { Elysia } from 'elysia';
+import { auth } from '@/lib/auth';
+import { HttpStatusEnum } from 'elysia-http-status-code/status';
 
-export const authMiddleware = new Elysia({ name: "auth-middleware" })
+export const authMiddleware = new Elysia({ name: 'auth-middleware' })
   .macro({
     auth: {
-      async resolve({ set, request: { headers } }) {
+      async resolve({ request: { headers } }) {
         const session = await auth.api.getSession({
           headers,
         });
 
         if (!session) {
-          throw Response.json({
-            status: HttpStatusEnum.HTTP_401_UNAUTHORIZED,
-            message: "Unauthorized",
-          }, { status: HttpStatusEnum.HTTP_401_UNAUTHORIZED });
+          throw Response.json(
+            {
+              status: HttpStatusEnum.HTTP_401_UNAUTHORIZED,
+              message: 'Unauthorized',
+            },
+            { status: HttpStatusEnum.HTTP_401_UNAUTHORIZED },
+          );
         }
 
         return {
@@ -24,6 +27,4 @@ export const authMiddleware = new Elysia({ name: "auth-middleware" })
       },
     },
   })
-  .as("global");
-
-
+  .as('global');

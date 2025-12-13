@@ -1,23 +1,23 @@
-import { Elysia } from "elysia";
-import { authMiddleware } from "../../middleware/auth";
-import * as handlers from "./blogs.controller";
-import * as schemas from "./blogs.schema";
+import { Elysia } from 'elysia';
+import { authMiddleware } from '@/middleware/auth';
+import * as handlers from './blogs.controller';
+import * as schemas from './blogs.schema';
 
-export const blogRoutes = new Elysia({ prefix: "/blogs" })
-  .model({ 
-    blog: schemas.BlogModel 
+export const blogRoutes = new Elysia({ prefix: '/blogs' })
+  .model({
+    blog: schemas.BlogModel,
   })
   .use(authMiddleware)
-  .get("/", handlers.getBlogs, schemas.getBlogsSchema)
-  .post("/", handlers.createBlog, {
+  .get('/', handlers.getBlogs, schemas.getBlogsSchema)
+  .post('/', handlers.createBlog, {
     ...schemas.createBlogSchema,
-    auth: true
+    auth: true,
   })
-  .put("/:id", handlers.updateBlog, {
+  .put('/:id', handlers.updateBlog, {
     ...schemas.updateBlogSchema,
-    auth: true
+    auth: true,
   })
-  .delete("/:id", handlers.deleteBlog, {
+  .delete('/:id', handlers.deleteBlog, {
     ...schemas.deleteBlogSchema,
-    auth: true
+    auth: true,
   });

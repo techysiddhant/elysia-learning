@@ -7,7 +7,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-myapp}
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
-      - BETTER_AUTH_URL=${BETTER_AUTH_URL} 
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - PORT=3000
     depends_on:
       - db
@@ -32,7 +32,7 @@ services:
     container_name: elysia_nginx
     restart: always
     ports:
-      - "80:80"
+      - '80:80'
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
