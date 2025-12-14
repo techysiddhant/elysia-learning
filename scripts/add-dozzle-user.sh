@@ -31,13 +31,17 @@ echo "Appending user to $USERS_FILE..."
 # Fix permissions so we can write to it (if owned by root)
 sudo chmod 666 "$USERS_FILE"
 
-if grep -q "users: \[\]" "$USERS_FILE"; then
-    sed -i.bak 's/users: \[\]/users:/' "$USERS_FILE"
-    rm "${USERS_FILE}.bak"
-fi
-if ! grep -q "^users:" "$USERS_FILE"; then echo "users:" >> "$USERS_FILE"; fi
+sudo chmod 666 "$USERS_FILE"
 
-echo "$HASH_OUTPUT" | sed 's/^/  /' >> "$USERS_FILE"
+# Check if "users:" key exists. If not, add it.
+if ! grep -q "^users:" "$USERS_FILE"; then
+    echo "users:" > "$USERS_FILE"
+fi
+
+# Append the new user with correct indentation (2 spaces)
+# We strip the 'users:' line from the generated output if it exists to avoid duplication
+echo "$HASH_OUTPUT" | grep -v "users:" | sed 's/^/  /' >> "$USERS_FILE"
+
 echo "User $USERNAME added successfully. Restarting Dozzle..."
 docker restart dozzle || docker compose up -d dozzle
 echo "Done! Login at http://localhost:8888"
