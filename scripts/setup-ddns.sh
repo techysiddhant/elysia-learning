@@ -35,8 +35,9 @@ if [ ! -f "$CONFIG_PATH" ]; then
 API_TOKEN=your_api_token_here
 # Zone ID (Found in Cloudflare Dashboard > Overview)
 ZONE_ID=your_zone_id_here
-# The domain record to update (e.g., api.example.com)
-RECORD_NAME=api.example.com
+# The domain records to update (comma separated)
+# Example: api.example.com,ssh.example.com
+RECORD_NAME=api.example.com,ssh.example.com
 EOF
     chmod 600 "$CONFIG_PATH"
     echo -e "${GREEN}Config created. PLEASE EDIT $CONFIG_PATH with your details!${NC}"

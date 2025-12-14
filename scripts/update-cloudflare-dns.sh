@@ -22,48 +22,55 @@ fi
 
 echo "Current IP: $IP"
 
-# Get the current DNS record details to check if update is needed
-# We filter by name and type A
-RECORD_INFO=$(curl -s -X GET "$API_URL?name=$RECORD_NAME&type=A" \
-    -H "Authorization: Bearer $API_TOKEN" \
-    -H "Content-Type: application/json")
 
-# Check if the API call was successful
-SUCCESS=$(echo "$RECORD_INFO" | jq -r '.success')
-if [ "$SUCCESS" != "true" ]; then
-    echo "Error: Failed to fetch DNS record info from Cloudflare"
-    echo "Response: $RECORD_INFO" | jq .
-    exit 1
-fi
+# Loop through the comma-separated list of records
+IFS=',' read -ra RECORDS <<< "$RECORD_NAME"
+for RECORD in "${RECORDS[@]}"; do
+    echo "Processing $RECORD..."
 
-# Extract the Record ID and current IP in Cloudflare
-RECORD_ID=$(echo "$RECORD_INFO" | jq -r '.result[0].id')
-CURRENT_DNS_IP=$(echo "$RECORD_INFO" | jq -r '.result[0].content')
+    # Determine proxy setting: 'ssh' subdomain should NOT be proxied, others SHOULD be.
+    PROXIED=true
+    if [[ "$RECORD" == *"ssh"* ]]; then
+        PROXIED=false
+    fi
 
-if [ "$RECORD_ID" == "null" ]; then
-    echo "Error: Record $RECORD_NAME not found in Cloudflare zone"
-    exit 1
-fi
+    # Get the current DNS record details
+    RECORD_INFO=$(curl -s -X GET "$API_URL?name=$RECORD&type=A" \
+        -H "Authorization: Bearer $API_TOKEN" \
+        -H "Content-Type: application/json")
 
-if [ "$IP" == "$CURRENT_DNS_IP" ]; then
-    echo "IP has not changed ($IP). No update needed."
-    exit 0
-fi
+    SUCCESS=$(echo "$RECORD_INFO" | jq -r '.success')
+    if [ "$SUCCESS" != "true" ]; then
+        echo "Error: Failed to fetch info for $RECORD"
+        continue
+    fi
 
-echo "IP changed from $CURRENT_DNS_IP to $IP. Updating..."
+    RECORD_ID=$(echo "$RECORD_INFO" | jq -r '.result[0].id')
+    CURRENT_DNS_IP=$(echo "$RECORD_INFO" | jq -r '.result[0].content')
 
-# Update the record
-UPDATE_RESPONSE=$(curl -s -X PUT "$API_URL/$RECORD_ID" \
-    -H "Authorization: Bearer $API_TOKEN" \
-    -H "Content-Type: application/json" \
-    --data "{\"type\":\"A\",\"name\":\"$RECORD_NAME\",\"content\":\"$IP\",\"proxied\":false}")
+    if [ "$RECORD_ID" == "null" ]; then
+        echo "Warning: Record $RECORD not found in Cloudflare zone. Please create it manually first."
+        continue
+    fi
 
-UPDATE_SUCCESS=$(echo "$UPDATE_RESPONSE" | jq -r '.success')
+    if [ "$IP" == "$CURRENT_DNS_IP" ]; then
+        echo "IP for $RECORD has not changed. Skipping."
+        continue
+    fi
 
-if [ "$UPDATE_SUCCESS" == "true" ]; then
-    echo "Successfully updated $RECORD_NAME to $IP"
-else
-    echo "Error: Failed to update DNS record"
-    echo "Response: $UPDATE_RESPONSE" | jq .
-    exit 1
-fi
+    echo "Updating $RECORD to $IP (Proxied: $PROXIED)..."
+
+    UPDATE_RESPONSE=$(curl -s -X PUT "$API_URL/$RECORD_ID" \
+        -H "Authorization: Bearer $API_TOKEN" \
+        -H "Content-Type: application/json" \
+        --data "{\"type\":\"A\",\"name\":\"$RECORD\",\"content\":\"$IP\",\"proxied\":$PROXIED}")
+
+    UPDATE_SUCCESS=$(echo "$UPDATE_RESPONSE" | jq -r '.success')
+
+    if [ "$UPDATE_SUCCESS" == "true" ]; then
+        echo "Successfully updated $RECORD"
+    else
+        echo "Error: Failed to update $RECORD"
+        echo "$UPDATE_RESPONSE" | jq .
+    fi
+done
