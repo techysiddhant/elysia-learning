@@ -56,7 +56,7 @@ echo "IP changed from $CURRENT_DNS_IP to $IP. Updating..."
 UPDATE_RESPONSE=$(curl -s -X PUT "$API_URL/$RECORD_ID" \
     -H "Authorization: Bearer $API_TOKEN" \
     -H "Content-Type: application/json" \
-    --data "{\"type\":\"A\",\"name\":\"$RECORD_NAME\",\"content\":\"$IP\",\"proxied\":true}")
+    --data "{\"type\":\"A\",\"name\":\"$RECORD_NAME\",\"content\":\"$IP\",\"proxied\":false}")
 
 UPDATE_SUCCESS=$(echo "$UPDATE_RESPONSE" | jq -r '.success')
 
