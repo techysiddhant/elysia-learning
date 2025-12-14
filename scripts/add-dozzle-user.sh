@@ -2,7 +2,11 @@
 # Points to the correct directory
 USERS_FILE="./dozzle_data/users.yml"
 
-if [ ! -f "$USERS_FILE" ]; then echo "Error: $USERS_FILE not found."; exit 1; fi
+if [ ! -f "$USERS_FILE" ]; then 
+    echo "Creating new users file at $USERS_FILE..."
+    mkdir -p "$(dirname "$USERS_FILE")"
+    touch "$USERS_FILE"
+fi
 
 echo "Adding a new user to Dozzle..."
 read -p "Username: " USERNAME
